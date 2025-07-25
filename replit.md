@@ -26,11 +26,11 @@ Preferred communication style: Simple, everyday language.
 - **Development Server**: Custom Vite integration for hot module replacement
 
 ### Database Architecture
-- **ORM**: Drizzle ORM with PostgreSQL dialect
-- **Database**: PostgreSQL database with persistent storage
-- **Migrations**: Drizzle Kit for schema management
-- **Current Storage**: PostgreSQL database implementation with automatic data initialization
-- **Tables**: legal_documents (Constitution & Penal Code), legal_queries (AI responses)
+- **Database**: MongoDB with Mongoose ODM
+- **Connection**: Local MongoDB instance (mongodb://localhost:27017/wakili-ai)
+- **Schema Management**: Mongoose schemas for data modeling
+- **Current Storage**: MongoDB implementation with automatic data initialization
+- **Collections**: legaldocuments (Constitution & Penal Code), legalqueries (AI responses)
 
 ## Key Components
 

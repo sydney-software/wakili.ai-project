@@ -1,9 +1,7 @@
-import { type LegalDocument, type InsertLegalDocument, type LegalQuery, type InsertLegalQuery, legalDocuments, legalQueries } from "@shared/schema";
-import { randomUUID } from "crypto";
+import { type LegalDocument, type InsertLegalDocument, type LegalQuery, type InsertLegalQuery } from "@shared/schema";
 import { constitutionArticles } from "./data/constitution";
 import { penalCodeSections } from "./data/penal-code";
-import { db } from "./db";
-import { eq, ilike, or, and } from "drizzle-orm";
+import { connectToMongoDB, LegalDocument as LegalDocumentModel, LegalQuery as LegalQueryModel } from "./db";
 
 export interface IStorage {
   // Legal Documents
@@ -19,18 +17,24 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
+  constructor() {
+    this.initializeLegalDatabase();
+  }
+
   async initializeLegalDatabase() {
     try {
+      await connectToMongoDB();
+      
       // Check if data already exists
-      const existingDocs = await db.select().from(legalDocuments).limit(1);
-      if (existingDocs.length > 0) {
+      const existingDocs = await LegalDocumentModel.findOne();
+      if (existingDocs) {
         return; // Data already initialized
       }
 
       // Load Constitution articles
       const constitutionData = constitutionArticles.map(article => ({
         title: article.title,
-        type: 'constitution' as const,
+        type: 'constitution',
         article: article.article,
         section: article.section,
         content: article.content,
@@ -41,7 +45,7 @@ export class DatabaseStorage implements IStorage {
       // Load Penal Code sections
       const penalCodeData = penalCodeSections.map(section => ({
         title: section.title,
-        type: 'penal_code' as const,
+        type: 'penal_code',
         section: section.section,
         article: null,
         content: section.content,
@@ -50,7 +54,7 @@ export class DatabaseStorage implements IStorage {
       }));
 
       // Insert all data
-      await db.insert(legalDocuments).values([...constitutionData, ...penalCodeData]);
+      await LegalDocumentModel.insertMany([...constitutionData, ...penalCodeData]);
       console.log('Legal database initialized with Constitution and Penal Code data');
     } catch (error) {
       console.error('Error initializing legal database:', error);
@@ -58,63 +62,133 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getLegalDocument(id: string): Promise<LegalDocument | undefined> {
-    const [document] = await db.select().from(legalDocuments).where(eq(legalDocuments.id, id));
-    return document || undefined;
+    await connectToMongoDB();
+    const document = await LegalDocumentModel.findById(id);
+    if (!document) return undefined;
+    
+    return {
+      id: document._id.toString(),
+      title: document.title,
+      type: document.type,
+      section: document.section,
+      article: document.article,
+      content: document.content,
+      citation: document.citation,
+      metadata: document.metadata,
+      createdAt: document.createdAt,
+    };
   }
 
   async getAllLegalDocuments(): Promise<LegalDocument[]> {
-    return await db.select().from(legalDocuments);
+    await connectToMongoDB();
+    const documents = await LegalDocumentModel.find();
+    
+    return documents.map(doc => ({
+      id: doc._id.toString(),
+      title: doc.title,
+      type: doc.type,
+      section: doc.section,
+      article: doc.article,
+      content: doc.content,
+      citation: doc.citation,
+      metadata: doc.metadata,
+      createdAt: doc.createdAt,
+    }));
   }
 
   async searchLegalDocuments(query: string, type?: string): Promise<LegalDocument[]> {
-    const searchConditions = [
-      ilike(legalDocuments.title, `%${query}%`),
-      ilike(legalDocuments.content, `%${query}%`),
-      ilike(legalDocuments.section, `%${query}%`),
-      ilike(legalDocuments.article, `%${query}%`)
-    ];
+    await connectToMongoDB();
+    
+    const searchConditions: any = {
+      $or: [
+        { title: { $regex: query, $options: 'i' } },
+        { content: { $regex: query, $options: 'i' } },
+        { section: { $regex: query, $options: 'i' } },
+        { article: { $regex: query, $options: 'i' } }
+      ]
+    };
 
     if (type) {
-      return await db
-        .select()
-        .from(legalDocuments)
-        .where(and(or(...searchConditions), eq(legalDocuments.type, type)));
+      searchConditions.type = type;
     }
 
-    return await db
-      .select()
-      .from(legalDocuments)
-      .where(or(...searchConditions));
+    const documents = await LegalDocumentModel.find(searchConditions);
+    
+    return documents.map(doc => ({
+      id: doc._id.toString(),
+      title: doc.title,
+      type: doc.type,
+      section: doc.section,
+      article: doc.article,
+      content: doc.content,
+      citation: doc.citation,
+      metadata: doc.metadata,
+      createdAt: doc.createdAt,
+    }));
   }
 
   async createLegalDocument(insertDocument: InsertLegalDocument): Promise<LegalDocument> {
-    const [document] = await db
-      .insert(legalDocuments)
-      .values(insertDocument)
-      .returning();
-    return document;
+    await connectToMongoDB();
+    const document = await LegalDocumentModel.create(insertDocument);
+    
+    return {
+      id: document._id.toString(),
+      title: document.title,
+      type: document.type,
+      section: document.section,
+      article: document.article,
+      content: document.content,
+      citation: document.citation,
+      metadata: document.metadata,
+      createdAt: document.createdAt,
+    };
   }
 
   async getLegalQuery(id: string): Promise<LegalQuery | undefined> {
-    const [query] = await db.select().from(legalQueries).where(eq(legalQueries.id, id));
-    return query || undefined;
+    await connectToMongoDB();
+    const query = await LegalQueryModel.findById(id);
+    if (!query) return undefined;
+    
+    return {
+      id: query._id.toString(),
+      question: query.question,
+      response: query.response,
+      sources: query.sources,
+      category: query.category,
+      confidence: query.confidence,
+      createdAt: query.createdAt,
+    };
   }
 
   async getAllLegalQueries(): Promise<LegalQuery[]> {
-    return await db.select().from(legalQueries).orderBy(legalQueries.createdAt);
+    await connectToMongoDB();
+    const queries = await LegalQueryModel.find().sort({ createdAt: -1 });
+    
+    return queries.map(query => ({
+      id: query._id.toString(),
+      question: query.question,
+      response: query.response,
+      sources: query.sources,
+      category: query.category,
+      confidence: query.confidence,
+      createdAt: query.createdAt,
+    }));
   }
 
   async createLegalQuery(insertQuery: InsertLegalQuery): Promise<LegalQuery> {
-    const [query] = await db
-      .insert(legalQueries)
-      .values(insertQuery)
-      .returning();
-    return query;
+    await connectToMongoDB();
+    const query = await LegalQueryModel.create(insertQuery);
+    
+    return {
+      id: query._id.toString(),
+      question: query.question,
+      response: query.response,
+      sources: query.sources,
+      category: query.category,
+      confidence: query.confidence,
+      createdAt: query.createdAt,
+    };
   }
 }
 
-const databaseStorage = new DatabaseStorage();
-// Initialize the database on startup
-databaseStorage.initializeLegalDatabase();
-
-export const storage = databaseStorage;
+export const storage = new DatabaseStorage();
