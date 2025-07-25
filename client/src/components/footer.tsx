@@ -46,7 +46,7 @@ export default function Footer() {
         </div>
         
         <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; 2024 Wakili.ai. All rights reserved. | Powered by OpenAI | Built for legal education and information.</p>
+          <p>&copy; 2025 Wakili.ai. All rights reserved. | Created by Sydney Walter | Built for legal education and information.</p>
         </div>
       </div>
     </footer>
