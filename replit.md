@@ -27,9 +27,10 @@ Preferred communication style: Simple, everyday language.
 
 ### Database Architecture
 - **ORM**: Drizzle ORM with PostgreSQL dialect
-- **Database**: Configured for PostgreSQL (via DATABASE_URL environment variable)
+- **Database**: PostgreSQL database with persistent storage
 - **Migrations**: Drizzle Kit for schema management
-- **Current Storage**: In-memory storage implementation for development
+- **Current Storage**: PostgreSQL database implementation with automatic data initialization
+- **Tables**: legal_documents (Constitution & Penal Code), legal_queries (AI responses)
 
 ## Key Components
 
