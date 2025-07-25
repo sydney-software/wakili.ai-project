@@ -47,11 +47,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/legal-documents/search", async (req, res) => {
     try {
       const { query, type } = z.object({
-        query: z.string().min(1, "Search query is required"),
+        query: z.string().default(""),
         type: z.string().optional(),
       }).parse(req.query);
 
-      const documents = await storage.searchLegalDocuments(query, type);
+      // If no query provided, return documents by type or all documents
+      const documents = query 
+        ? await storage.searchLegalDocuments(query, type)
+        : type 
+          ? await storage.searchLegalDocuments("", type)
+          : await storage.getAllLegalDocuments();
+      
       res.json(documents);
     } catch (error) {
       console.error("Error searching legal documents:", error);

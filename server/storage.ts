@@ -99,15 +99,19 @@ export class DatabaseStorage implements IStorage {
   async searchLegalDocuments(query: string, type?: string): Promise<LegalDocument[]> {
     await connectToMongoDB();
     
-    const searchConditions: any = {
-      $or: [
+    const searchConditions: any = {};
+
+    // If query is provided, add search conditions
+    if (query && query.trim()) {
+      searchConditions.$or = [
         { title: { $regex: query, $options: 'i' } },
         { content: { $regex: query, $options: 'i' } },
         { section: { $regex: query, $options: 'i' } },
         { article: { $regex: query, $options: 'i' } }
-      ]
-    };
+      ];
+    }
 
+    // If type is specified, filter by type
     if (type) {
       searchConditions.type = type;
     }
