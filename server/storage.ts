@@ -1,6 +1,10 @@
 import { type LegalDocument, type InsertLegalDocument, type LegalQuery, type InsertLegalQuery } from "@shared/schema";
 import { constitutionArticles } from "./data/constitution";
 import { penalCodeSections } from "./data/penal-code";
+import { contractLawData } from "./data/contract-law";
+import { propertyLawData } from "./data/property-law";
+import { employmentLawData } from "./data/employment-law";
+import { familyLawData } from "./data/family-law";
 import { connectToMongoDB, LegalDocument as LegalDocumentModel, LegalQuery as LegalQueryModel } from "./db";
 
 export interface IStorage {
@@ -43,7 +47,7 @@ export class DatabaseStorage implements IStorage {
       }));
 
       // Load Penal Code sections
-      const penalCodeData = penalCodeSections.map(section => ({
+      const penalCodeDataMapped = penalCodeSections.map(section => ({
         title: section.title,
         type: 'penal_code',
         section: section.section,
@@ -53,9 +57,60 @@ export class DatabaseStorage implements IStorage {
         metadata: { category: section.category, penalty: section.penalty },
       }));
 
+      // Load Contract Law data
+      const contractData = contractLawData.map(item => ({
+        title: item.title,
+        type: 'contract',
+        section: item.section,
+        article: item.article,
+        content: item.content,
+        citation: `${item.metadata.act}, ${item.section || item.article || item.title}`,
+        metadata: item.metadata,
+      }));
+
+      // Load Property Law data
+      const propertyData = propertyLawData.map(item => ({
+        title: item.title,
+        type: 'property',
+        section: item.section,
+        article: item.article,
+        content: item.content,
+        citation: `${item.metadata.act}, ${item.section || item.article || item.title}`,
+        metadata: item.metadata,
+      }));
+
+      // Load Employment Law data
+      const employmentData = employmentLawData.map(item => ({
+        title: item.title,
+        type: 'employment',
+        section: item.section,
+        article: item.article,
+        content: item.content,
+        citation: `${item.metadata.act}, ${item.section || item.article || item.title}`,
+        metadata: item.metadata,
+      }));
+
+      // Load Family Law data
+      const familyData = familyLawData.map(item => ({
+        title: item.title,
+        type: 'family',
+        section: item.section,
+        article: item.article,
+        content: item.content,
+        citation: `${item.metadata.act}, ${item.section || item.article || item.title}`,
+        metadata: item.metadata,
+      }));
+
       // Insert all data
-      await LegalDocumentModel.insertMany([...constitutionData, ...penalCodeData]);
-      console.log('Legal database initialized with Constitution and Penal Code data');
+      await LegalDocumentModel.insertMany([
+        ...constitutionData, 
+        ...penalCodeDataMapped, 
+        ...contractData,
+        ...propertyData,
+        ...employmentData,
+        ...familyData
+      ]);
+      console.log('Legal database initialized with all legal categories: Constitution, Penal Code, Contract Law, Property Law, Employment Law, and Family Law');
     } catch (error) {
       console.error('Error initializing legal database:', error);
     }

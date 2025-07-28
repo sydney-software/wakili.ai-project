@@ -26,11 +26,12 @@ Preferred communication style: Simple, everyday language.
 - **Development Server**: Custom Vite integration for hot module replacement
 
 ### Database Architecture
-- **Database**: MongoDB with Mongoose ODM
-- **Connection**: Local MongoDB instance (mongodb://localhost:27017/wakili-ai)
+- **Database**: MongoDB with Mongoose ODM (mongodb-memory-server for development)
+- **Connection**: In-memory MongoDB instance for reliable local development
 - **Schema Management**: Mongoose schemas for data modeling
 - **Current Storage**: MongoDB implementation with automatic data initialization
-- **Collections**: legaldocuments (Constitution & Penal Code), legalqueries (AI responses)
+- **Collections**: legaldocuments (Constitution, Penal Code, Contract Law, Property Law, Employment Law, Family Law), legalqueries (AI responses)
+- **Legal Categories**: 6 complete legal areas with authentic Kenyan legal provisions
 
 ## Key Components
 
@@ -41,10 +42,14 @@ Preferred communication style: Simple, everyday language.
 - **Source Attribution**: Proper legal citations with document excerpts
 
 ### Legal Document Management
-- **Constitution Database**: Articles from the 2010 Constitution of Kenya
-- **Penal Code Database**: Sections from the Kenyan Penal Code
-- **Search Functionality**: Text-based search across legal documents
-- **Document Types**: Constitution articles, penal code sections, acts, case law
+- **Constitution Database**: Complete articles from the 2010 Constitution of Kenya
+- **Penal Code Database**: Criminal offences and penalties from the Kenyan Penal Code
+- **Contract Law Database**: Provisions from Law of Contract Act, Consumer Protection Act, Business Laws Amendment Act 2024
+- **Property Law Database**: Land ownership, tenure systems, and rights from Land Act 2012
+- **Employment Law Database**: Worker rights, leave entitlements, and protections from Employment Act 2007
+- **Family Law Database**: Marriage, divorce, child custody provisions from Marriage Act 2014, Children Act 2022
+- **Search Functionality**: Text-based search across all legal document categories
+- **Document Types**: Constitutional articles, criminal law sections, civil law provisions, regulatory acts
 
 ### User Interface Components
 - **Search Interface**: Textarea input with real-time query processing
@@ -54,11 +59,18 @@ Preferred communication style: Simple, everyday language.
 
 ## Data Flow
 
+### AI Legal Assistant
 1. **User Query**: User submits legal question through search interface
 2. **Document Retrieval**: System searches relevant legal documents based on query
 3. **AI Processing**: OpenAI processes query with legal context and returns structured response
 4. **Response Storage**: Query and response are stored for future reference
 5. **UI Update**: Frontend displays formatted response with sources and confidence rating
+
+### Legal Document Browser
+1. **Category Selection**: User clicks on legal category (Constitution, Criminal, Contract, Property, Employment, Family)
+2. **Document Listing**: System retrieves and displays all documents in selected category
+3. **Document Access**: User clicks individual document for full content view
+4. **Citation Copy**: Users can copy legal citations for reference
 
 ## External Dependencies
 
@@ -102,3 +114,5 @@ Preferred communication style: Simple, everyday language.
 - **Schema**: Defined in `shared/schema.ts` with Drizzle ORM
 - **Migrations**: Generated in `./migrations` directory
 - **Push Command**: `npm run db:push` applies schema changes to database
+- **Data Initialization**: Automatic loading of legal documents on server startup
+- **Document Count**: 70+ authentic legal provisions across 6 categories

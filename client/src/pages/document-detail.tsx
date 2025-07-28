@@ -52,8 +52,40 @@ export default function DocumentDetail() {
         return 'bg-primary-100 text-primary-800';
       case 'penal_code':
         return 'bg-red-100 text-red-800';
+      case 'contract':
+        return 'bg-green-100 text-green-800';
+      case 'property':
+        return 'bg-blue-100 text-blue-800';
+      case 'employment':
+        return 'bg-purple-100 text-purple-800';
+      case 'family':
+        return 'bg-yellow-100 text-yellow-800';
       default:
         return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getBackToText = (type: string) => {
+    switch (type) {
+      case 'constitution': return 'Constitution';
+      case 'penal_code': return 'Penal Code';
+      case 'contract': return 'Contract Law';
+      case 'property': return 'Property Law';
+      case 'employment': return 'Employment Law';
+      case 'family': return 'Family Law';
+      default: return 'Legal Documents';
+    }
+  };
+
+  const getDocumentTypeLabel = (type: string) => {
+    switch (type) {
+      case 'constitution': return 'Constitution';
+      case 'penal_code': return 'Penal Code';
+      case 'contract': return 'Contract Law';
+      case 'property': return 'Property Law';
+      case 'employment': return 'Employment Law';
+      case 'family': return 'Family Law';
+      default: return 'Legal Document';
     }
   };
 
@@ -122,7 +154,7 @@ export default function DocumentDetail() {
         <Link href={`/category/${document.type}`}>
           <Button variant="ghost" className="mb-6">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to {document.type === 'constitution' ? 'Constitution' : 'Penal Code'}
+            Back to {getBackToText(document.type)}
           </Button>
         </Link>
 
@@ -142,7 +174,7 @@ export default function DocumentDetail() {
                 </div>
               </div>
               <Badge className={getDocumentColor(document.type)}>
-                {document.type === 'constitution' ? 'Constitution' : 'Penal Code'}
+                {getDocumentTypeLabel(document.type)}
               </Badge>
             </div>
           </CardHeader>
@@ -177,6 +209,28 @@ export default function DocumentDetail() {
                       {document.metadata.penalty && (
                         <div>
                           <span className="font-medium text-gray-700">Penalty:</span>
+                          <p className="text-gray-600">{document.metadata.penalty}</p>
+                        </div>
+                      )}
+                    </>
+                  )}
+                  {(document.type === 'contract' || document.type === 'property' || document.type === 'employment' || document.type === 'family') && (
+                    <>
+                      {document.metadata.act && (
+                        <div>
+                          <span className="font-medium text-gray-700">Source Act:</span>
+                          <p className="text-gray-600">{document.metadata.act}</p>
+                        </div>
+                      )}
+                      {document.metadata.category && (
+                        <div>
+                          <span className="font-medium text-gray-700">Category:</span>
+                          <p className="text-gray-600">{document.metadata.category}</p>
+                        </div>
+                      )}
+                      {document.metadata.penalty && (
+                        <div>
+                          <span className="font-medium text-gray-700">Penalty/Consequence:</span>
                           <p className="text-gray-600">{document.metadata.penalty}</p>
                         </div>
                       )}

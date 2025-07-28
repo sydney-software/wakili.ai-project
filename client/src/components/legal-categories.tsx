@@ -21,6 +21,38 @@ export default function LegalCategories() {
     },
   });
 
+  const { data: contractDocs } = useQuery({
+    queryKey: ['/api/legal-documents', 'contract'],
+    queryFn: async () => {
+      const response = await fetch('/api/legal-documents/search?type=contract&query=');
+      return response.json();
+    },
+  });
+
+  const { data: propertyDocs } = useQuery({
+    queryKey: ['/api/legal-documents', 'property'],
+    queryFn: async () => {
+      const response = await fetch('/api/legal-documents/search?type=property&query=');
+      return response.json();
+    },
+  });
+
+  const { data: employmentDocs } = useQuery({
+    queryKey: ['/api/legal-documents', 'employment'],
+    queryFn: async () => {
+      const response = await fetch('/api/legal-documents/search?type=employment&query=');
+      return response.json();
+    },
+  });
+
+  const { data: familyDocs } = useQuery({
+    queryKey: ['/api/legal-documents', 'family'],
+    queryFn: async () => {
+      const response = await fetch('/api/legal-documents/search?type=family&query=');
+      return response.json();
+    },
+  });
+
   const categories = [
     {
       title: "Constitutional Law",
@@ -45,42 +77,42 @@ export default function LegalCategories() {
     {
       title: "Contract Law",
       description: "Contract formation, enforcement, and commercial law",
-      count: "Coming Soon",
+      count: `${contractDocs?.length || 0} Provisions`,
       icon: "🤝",
       bgColor: "bg-green-100",
       iconColor: "text-green-600",
       type: "contract",
-      available: false
+      available: true
     },
     {
       title: "Property Law",
       description: "Land rights, property ownership, and real estate law",
-      count: "Coming Soon",
+      count: `${propertyDocs?.length || 0} Provisions`,
       icon: "🏠",
       bgColor: "bg-blue-100",
       iconColor: "text-blue-600",
       type: "property",
-      available: false
+      available: true
     },
     {
       title: "Employment Law",
       description: "Worker rights, employment contracts, and labor relations",
-      count: "Coming Soon",
+      count: `${employmentDocs?.length || 0} Provisions`,
       icon: "💼",
       bgColor: "bg-purple-100",
       iconColor: "text-purple-600",
       type: "employment",
-      available: false
+      available: true
     },
     {
       title: "Family Law",
       description: "Marriage, divorce, custody, and family relationships",
-      count: "Coming Soon",
+      count: `${familyDocs?.length || 0} Provisions`,
       icon: "👨‍👩‍👧‍👦",
       bgColor: "bg-yellow-100",
       iconColor: "text-yellow-600",
       type: "family",
-      available: false
+      available: true
     }
   ];
 

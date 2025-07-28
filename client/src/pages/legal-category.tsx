@@ -49,6 +49,34 @@ export default function LegalCategory() {
           icon: Scale,
           color: 'bg-red-100 text-red-800',
         };
+      case 'contract':
+        return {
+          title: 'Contract Law',
+          description: 'Contract formation, enforcement, and commercial law provisions',
+          icon: FileText,
+          color: 'bg-green-100 text-green-800',
+        };
+      case 'property':
+        return {
+          title: 'Property Law',
+          description: 'Land rights, property ownership, and real estate law',
+          icon: FileText,
+          color: 'bg-blue-100 text-blue-800',
+        };
+      case 'employment':
+        return {
+          title: 'Employment Law',
+          description: 'Worker rights, employment contracts, and labor relations',
+          icon: FileText,
+          color: 'bg-purple-100 text-purple-800',
+        };
+      case 'family':
+        return {
+          title: 'Family Law',
+          description: 'Marriage, divorce, custody, and family relationships',
+          icon: FileText,
+          color: 'bg-yellow-100 text-yellow-800',
+        };
       default:
         return {
           title: 'Legal Documents',
